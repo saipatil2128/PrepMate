@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Leaderboard 🏆</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive;
+      background: linear-gradient(180deg, #fff7df, #dff6ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .leaderboard-container {
+      background: white;
+      padding: 30px;
+      border-radius: 25px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      width: 90%;
+      max-width: 700px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f7fcff;
+      padding: 12px 20px;
+      border-radius: 15px;
+      margin: 8px 0;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .leaderboard-entry.top1 { background: #ffeaa7; font-weight: bold; }
+    .leaderboard-entry.top2 { background: #dfe6e9; font-weight: bold; }
+    .leaderboard-entry.top3 { background: #fab1a0; font-weight: bold; }
+
+    .rank {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+
+    .name {
+      flex-grow: 1;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .score {
+      font-weight: bold;
+      color: #2e8bee;
+    }
+
+    .medal {
+      margin-right: 10px;
+    }
+
+    .refresh-btn {
+      display: block;
+      margin: 15px auto;
+      background: #6cb8ff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .refresh-btn:hover {
+      background: #4c9ee6;
+    }
+  </style>
+</head>
+<body>
+  <div class="leaderboard-container">
+    <h2>🏅 PrepMate Leaderboard 🏅</h2>
+    <div id="leaderboardList">Loading leaderboard...</div>
+    <button class="refresh-btn" id="refreshLeaderboard">🔄 Refresh</button>
+  </div>
+
+  <script type="module">
+  import { db } from "./scripts/firebase.js";
+  import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const leaderboardList = document.getElementById("leaderboardList");
+  const refreshBtn = document.getElementById("refreshLeaderboard");
+
+  async function loadLeaderboard() {
+    leaderboardList.innerHTML = "⏳ Loading leaderboard...";
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "quizResults"));
+      const scores = {};
+      const nameMap = {};
+
+      // -- FIXED: Correctly build scores and nameMap
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const user = data.userId || "Unknown";
+        const name = data.name || "";
+        const score = data.score || 0;
+        const total = data.total || 0;
+        const percentage = (score / total) * 100;
+
+        if (!scores[user]) scores[user] = [];
+        scores[user].push(percentage);
+
+        if (name && name.trim().length > 0) {
+          nameMap[user] = name;
+        }
+      });
+
+      // -- Use name or pseudonym for display
+      const leaderboard = Object.entries(scores)
+        .map(([user, arr]) => {
+          let displayName = nameMap[user];
+          if (!displayName || displayName.trim().length === 0) {
+            const localPart = user.split('@')[0];
+            displayName = "Player " + (localPart.length > 3 ? localPart.substring(0,3) : localPart.charAt(0).toUpperCase());
+          }
+          return {
+            user,
+            average: arr.reduce((a, b) => a + b, 0) / arr.length,
+            name: displayName
+          }
+        })
+        .sort((a, b) => b.average - a.average);
+
+      if (leaderboard.length === 0) {
+        leaderboardList.innerHTML = "<p>No quiz results yet.</p>";
+        return;
+      }
+
+      leaderboardList.innerHTML = leaderboard
+        .map((entry, index) => {
+          const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "⭐";
+          const topClass = index < 3 ? `top${index + 1}` : "";
+          return `
+            <div class="leaderboard-entry ${topClass}">
+              <span class="rank">${index + 1}.</span>
+              <span class="medal">${medal}</span>
+              <span class="name">${entry.name}</span>
+              <span class="score">${entry.average.toFixed(1)}%</span>
+            </div>
+          `;
+        })
+        .join("");
+    } catch (error) {
+      console.error("❌ Error loading leaderboard:", error);
+      leaderboardList.innerHTML = "<p>⚠️ Unable to load leaderboard.</p>";
+    }
+  }
+
+  refreshBtn.addEventListener("click", loadLeaderboard);
+  loadLeaderboard();
+</script>
+
+  </script>
+</body>
+</html>

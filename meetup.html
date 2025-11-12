@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Meetups </title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive;
+      background: linear-gradient(180deg, #e3f6ff 0%, #fff7df 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .container {
+      background: white;
+      border-radius: 25px;
+      box-shadow: 0 6px 18px rgba(81,148,215,0.13);
+      width: 92%;
+      max-width: 820px;
+      margin: 38px 0 30px 0;
+      padding: 30px 18px 26px 18px;
+    }
+    h2 {
+      color: #3575af;
+      margin-bottom: 13px;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #444;
+      margin-bottom: 15px;
+      font-size: 1.12rem;
+      font-weight: 500;
+    }
+    /* Partition/Switcher styles */
+    .switcher-panel {
+      background: #f7fbff;
+      border-radius: 18px;
+      box-shadow: 0 2px 9px rgba(100,170,255,0.09);
+      padding: 23px 10px 17px 10px;
+      margin: 13px 0 25px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .switcher-row {
+      margin: 0 0 0 0;
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .tab-buttons {
+      background: transparent;
+      border-radius: 18px;
+      display: flex;
+      gap: 18px;
+      width: 310px;
+      justify-content: center;
+      margin: 0;
+    }
+    .tab-buttons button {
+      background: #6cb8ff !important;
+      color: #134174 !important;
+      border: none;
+      border-radius: 13px;
+      font-size: 17px;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 15px 15px;
+      min-width: 110px;
+      transition: 0.17s background;
+      box-shadow: 0 1px 4px rgba(120,183,255,0.11);
+      margin: 0;
+    }
+    .tab-buttons button.active {
+      background: #4ea2e3 !important;
+      color: #fff !important;
+    }
+    .tab-buttons button:focus { outline: 2px solid #a8d8ff; }
+    /* Cards, buttons, etc below (reuse previous) */
+    .card, .info-box, .data-box, .meetup-join-container, .leaderboard-entry {
+      background: #f7fbff;
+      border-radius: 16px;
+      box-shadow: 0 2.8px 9px rgba(100,190,255,0.06);
+      padding: 18px 13px;
+      margin: 13px 0;
+    }
+    button, .refresh-btn, .join-btn, .back-btn {
+      background: #6cb8ff !important;
+      color: #134174 !important;
+      border: none;
+      border-radius: 13px;
+      font-size: 17px;
+      padding: 12px 29px;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 1px 5px rgba(120,183,255,0.06);
+      transition: 0.17s background;
+      margin: 11px 7px 0 0;
+    }
+    button#logoutBtn { background: #fd8686 !important; color: #fff !important; }
+    button:hover, .join-btn:hover, .back-btn:hover, .refresh-btn:hover {
+      background: #4ea2e3 !important;
+      color: #fff !important;
+    }
+    .center, .main-center {
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 9vw 0 6vw 0; }
+      .switcher-row { flex-direction: column; gap: 14px; }
+      .tab-buttons { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>👫 Activities & Friends</h2>
+    <div class="switcher-panel">
+      <div class="subtitle">Learn together and make new friends!</div>
+      <div class="switcher-row">
+        <div class="tab-buttons">
+          <button id="virtualTab" class="active">Virtual Groups</button>
+          <button id="meetupTab">Meetups</button>
+        </div>
+      </div>
+    </div>
+    <div id="virtualGroups" class="tab-content"></div>
+    <div id="physicalMeetups" class="tab-content" style="display:none;"></div>
+    <!-- BACK BUTTON ADDED BELOW -->
+    <button class="back-btn" id="backDashboard">⬅️ Back to Dashboard</button>
+  </div>
+  <script type="module">
+    const virtualGroups = [
+      {
+        title: "Math Magic Circle",
+        difficulty: "Easy",
+        desc: "Solve puzzles together with friends!",
+        time: "3:00 PM Today",
+        members: "12/15",
+        topic: "addition"
+      },
+      {
+        title: "Science Explorers",
+        difficulty: "Medium",
+        desc: "Fun experiments and discoveries!",
+        time: "4:30 PM Today",
+        members: "8/10",
+        topic: "fractions"
+      },
+      {
+        title: "Story Time Club",
+        difficulty: "Easy",
+        desc: "Read and create stories together!",
+        time: "2:00 PM Tomorrow",
+        members: "6/12",
+        topic: "wordproblems"
+      }
+    ];
+    const meetups = [
+      {
+        title: "Learning Park Meetup",
+        age: "6–9 years",
+        desc: "Outdoor learning games and activities",
+        location: "Central Park - Play Area",
+        time: "Saturday, 2:00 PM",
+        attending: "8 attending",
+        topic: "counting"
+      },
+      {
+        title: "Library Study Group",
+        age: "7–9 years",
+        desc: "Group reading and homework help",
+        location: "City Library - Kids Section",
+        time: "Sunday, 10:00 AM",
+        attending: "5 attending",
+        topic: "shapes"
+      }
+    ];
+    const virtualContainer = document.getElementById("virtualGroups");
+    const meetupContainer = document.getElementById("physicalMeetups");
+    function renderCards(list, container, type) {
+      container.innerHTML = "";
+      list.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${item.title} <span style="font-size:13px; color:#777;">(${item.difficulty || item.age})</span></h3>
+          <p>${item.desc}</p>
+          <p class="info">📍 ${item.location || "Online"}<br>🕒 ${item.time}<br>👥 ${item.members || item.attending}</p>
+          <button class="join-btn">Join ${type === 'virtual' ? 'Group' : 'Meetup'} 💬</button>
+        `;
+        card.querySelector(".join-btn").addEventListener("click", () => {
+          if (type === "virtual") {
+            window.location.href = "vmeet.html";
+          } else {
+            window.location.href = "pmeet.html";
+          }
+        });
+        container.appendChild(card);
+      });
+    }
+    renderCards(virtualGroups, virtualContainer, "virtual");
+    renderCards(meetups, meetupContainer, "physical");
+    document.getElementById("virtualTab").addEventListener("click", () => {
+      document.getElementById("virtualTab").classList.add("active");
+      document.getElementById("meetupTab").classList.remove("active");
+      virtualContainer.style.display = "block";
+      meetupContainer.style.display = "none";
+    });
+    document.getElementById("meetupTab").addEventListener("click", () => {
+      document.getElementById("meetupTab").classList.add("active");
+      document.getElementById("virtualTab").classList.remove("active");
+      virtualContainer.style.display = "none";
+      meetupContainer.style.display = "block";
+    });
+    // Back button logic
+    document.getElementById("backDashboard").addEventListener("click", () => {
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>

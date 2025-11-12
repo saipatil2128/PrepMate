@@ -1,0 +1,7 @@
+{
+  "subjects": [
+    { "name": "Math", "icon": "https://cdn-icons-png.flaticon.com/512/3081/3081829.png" },
+    { "name": "English", "icon": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png" },
+    { "name": "Science", "icon": "https://cdn-icons-png.flaticon.com/512/2957/2957359.png" }
+  ]
+}

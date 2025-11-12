@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Parent Control</title>
+  <style>
+  body {
+  font-family: "Comic Sans MS", cursive;
+  background: linear-gradient(180deg, #e3f6ff 0%, #fff7df 100%);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+.container {
+  background: white;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 24px;
+  box-shadow: 0 6px 18px rgba(120,180,255,0.14);
+  padding: 32px 20px 28px 20px;
+  margin-top: 32px;
+  margin-bottom: 30px;
+}
+h1 {
+  text-align: center;
+  color: #3575af;
+  font-size: 2.05rem;
+  margin-bottom: 28px;
+  font-weight: bold;
+}
+h2 {
+  color: #428ABA;
+  margin-top: 25px;
+  border-bottom: 2px solid #d3ebfc;
+  padding-bottom: 6px;
+  font-size: 1.18rem;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+}
+.info-box, .data-box, .study-hours {
+  background: #f7fbff;
+  border-radius: 16px;
+  padding: 19px 16px 16px 16px;
+  margin-top: 15px;
+  box-shadow: 0 2.8px 9px rgba(100,190,255,0.05);
+}
+.study-hours {
+  background: #fffbe9;
+  box-shadow: 0 2.8px 9px rgba(255,195,70,0.08);
+}
+.info-item {
+  font-size: 16px;
+  color: #254760;
+  margin: 7px 0 7px 0;
+  font-weight: 500;
+}
+.quiz-item, .help-item {
+  background: #ffffff;
+  border-radius: 11px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1.2px solid #d0eafc;
+  font-size: 15px;
+}
+.quiz-item:hover, .help-item:hover {
+  background: #eaf6ff;
+}
+label {
+  font-weight: bold;
+  color: #3177ad;
+  margin-bottom: 2px;
+  display: inline-block;
+}
+input[type="time"] {
+  padding: 8px;
+  border-radius: 9px;
+  border: 1.3px solid #afd9f4;
+  margin: 5px 9px 5px 0;
+  background: #f7fbff;
+  font-size: 15px;
+  letter-spacing: 0.1px;
+  color: #375e70;
+}
+button {
+  margin-top: 19px;
+  background: #6cb8ff;
+  color: #134174;
+  border: none;
+  border-radius: 13px;
+  padding: 13px 27px;
+  font-size: 17px;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+  box-shadow: 0 1.5px 8px rgba(140,180,255,0.08);
+  margin-right: 8px;
+  margin-bottom: 7px;
+}
+button#logoutBtn {
+  background: #fd8686;
+  color: #fff;
+  font-weight: bold;
+  margin-left: 8px;
+  margin-top: 19px;
+}
+button:hover {
+  background: #4ea2e3;
+  color: #fff;
+}
+.center {
+  text-align: center;
+}
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 8px;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+@media (max-width: 680px) {
+  .container {
+    padding: 8vw 2vw;
+  }
+  .info-box, .data-box, .study-hours {
+    padding: 10px 5vw 11px 5vw;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>👨‍👩‍👧 Parent Control Panel</h1>
+    <!-- Child Information -->
+    <section>
+      <h2>👦 Child Information</h2>
+      <div class="info-box" id="childInfo">
+        <p>Loading child data...</p>
+      </div>
+    </section>
+    <!-- Study Hours -->
+    <section>
+      <h2>⏰ Set Study Hours</h2>
+      <div class="study-hours">
+        <label for="startTime">Start Time:</label>
+        <input type="time" id="startTime" required />
+        <label for="endTime">End Time:</label>
+        <input type="time" id="endTime" required />
+        <button id="saveHoursBtn">💾 Save Study Hours</button>
+        <div class="success" id="saveMsg">✅ Study hours saved successfully!</div>
+      </div>
+    </section>
+    <!-- Quiz Performance -->
+    <section>
+      <h2>📊 Quiz Performance</h2>
+      <div class="data-box" id="quizResults">
+        <p>No quiz data found.</p>
+      </div>
+    </section>
+    <!-- Help Requests -->
+    <section>
+      <h2>💬 Help Requests</h2>
+      <div class="data-box" id="helpRequests">
+        <p>No help requests yet.</p>
+      </div>
+    </section>
+    <!-- Buttons -->
+    <div class="center">
+      <button onclick="window.location.href='dashboard.html'">⬅ Back to Dashboard</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </div>
+  <script type="module">
+    import { auth, db } from "./scripts/firebase.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { collection, getDocs, query, where, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    const childInfoDiv = document.getElementById("childInfo");
+    const quizResultsDiv = document.getElementById("quizResults");
+    const helpRequestsDiv = document.getElementById("helpRequests");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const saveHoursBtn = document.getElementById("saveHoursBtn");
+    const saveMsg = document.getElementById("saveMsg");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+    let currentUser = null;
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      currentUser = user;
+      try {
+        // --- Load child info ---
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          childInfoDiv.innerHTML = `
+            <p class="info-item"><b>Name:</b> ${data.name || "Not provided"}</p>
+            <p class="info-item"><b>Email:</b> ${user.email}</p>
+            <p class="info-item"><b>Age:</b> ${data.age || "N/A"}</p>
+            <p class="info-item"><b>Grade:</b> ${data.grade || "N/A"}</p>
+          `;
+        }
+        // --- Load quiz results (using userId field) ---
+        const quizQuery = query(collection(db, "quizResults"), where("userId", "==", user.email));
+        const quizSnapshot = await getDocs(quizQuery);
+        if (quizSnapshot.empty) {
+          quizResultsDiv.innerHTML = `<p>No quiz data found yet.</p>`;
+        } else {
+          quizResultsDiv.innerHTML = "";
+          quizSnapshot.forEach((docSnap) => {
+            const quiz = docSnap.data();
+            const dateStr = quiz.timestamp
+              ? new Date(quiz.timestamp).toLocaleString()
+              : "N/A";
+            quizResultsDiv.innerHTML += `
+              <div class="quiz-item">
+                <b>🧩 Topic:</b> ${quiz.topic || "Unknown"}<br>
+                <b>🎯 Score:</b> ${quiz.score || 0} / ${quiz.total || "N/A"}<br>
+                <b>⏰ Date:</b> ${dateStr}
+              </div>
+            `;
+          });
+        }
+        // --- Load help requests ---
+        const helpQuery = query(collection(db, "helpRequests"), where("userId", "==", user.uid));
+        const helpSnapshot = await getDocs(helpQuery);
+        helpRequestsDiv.innerHTML = helpSnapshot.empty ? `<p>No help requests yet.</p>` : "";
+        helpSnapshot.forEach(docSnap => {
+          const help = docSnap.data();
+          helpRequestsDiv.innerHTML += `
+            <div class="help-item">
+              <b>Category:</b> ${help.category}<br>
+              <b>Issue:</b> ${help.description}<br>
+              <small>${new Date(help.timestamp).toLocaleString()}</small>
+            </div>`;
+        });
+        // --- Load study hours ---
+        const hoursDoc = await getDoc(doc(db, "studyHours", user.uid));
+        if (hoursDoc.exists()) {
+          const hours = hoursDoc.data();
+          startTimeInput.value = hours.start || "";
+          endTimeInput.value = hours.end || "";
+        }
+      } catch (error) {
+        console.error("❌ Error loading parent data:", error);
+      }
+    });
+    // ✅ Save study hours
+    saveHoursBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      const start = startTimeInput.value;
+      const end = endTimeInput.value;
+      if (!start || !end) {
+        alert("Please select both start and end times!");
+        return;
+      }
+      try {
+        await setDoc(doc(db, "studyHours", currentUser.uid), {
+          userId: currentUser.uid,
+          start,
+          end,
+          updatedAt: new Date().toISOString()
+        });
+        saveMsg.style.display = "block";
+        setTimeout(() => (saveMsg.style.display = "none"), 3000);
+      } catch (error) {
+        console.error("❌ Error saving study hours:", error);
+        alert("Error saving study hours. Try again later.");
+      }
+    });
+    // ✅ Logout
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

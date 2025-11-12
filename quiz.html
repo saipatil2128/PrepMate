@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Quiz</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive;
+      background: linear-gradient(180deg, #e3f6ff, #fffbe3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      /* Removed align-items: center; */
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .quiz-container {
+      width: 90%;
+      max-width: 700px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      padding: 25px 30px;
+      text-align: center;
+      margin: 40px 0; /* ✅ allows scrolling space */
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    select {
+      margin-top: 5px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 80%;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 20px;
+      background: #6cb8ff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 25px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #4c9ee6;
+    }
+
+    .question-block {
+      margin: 20px 0;
+      text-align: left;
+      background: #f7fbff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
+    #resultBox {
+      margin-top: 20px;
+      background: #f7fff0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-container {
+        padding: 20px;
+      }
+      select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="quiz-container">
+    <h2>🧠 Take a Quiz!</h2>
+
+    <!-- Setup Section -->
+    <div id="quizSetup">
+      <label>Choose Age Group:</label>
+      <select id="ageSelect">
+        <option value="">--Select--</option>
+        <option value="5-6">5–6 Years</option>
+        <option value="7-8">7–8 Years</option>
+        <option value="9">9 Years</option>
+      </select>
+
+      <label>Choose Topic:</label>
+      <select id="topicSelect">
+        <option value="">--Select Age First--</option>
+      </select>
+
+      <button id="startQuizBtn">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quizArea" style="display:none;">
+      <h3 id="quizTitle"></h3>
+      <div id="questionBox"></div>
+      <button id="submitQuizBtn">Submit</button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultBox" style="display:none;"></div>
+  </div>
+
+  <script type="module">
+    import { db } from "./scripts/firebase.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    let currentQuiz = [];
+    let selectedAge = "";
+    let selectedTopic = "";
+    let user = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+
+    const ageSelect = document.getElementById("ageSelect");
+    const topicSelect = document.getElementById("topicSelect");
+    const startQuizBtn = document.getElementById("startQuizBtn");
+    const quizArea = document.getElementById("quizArea");
+    const quizTitle = document.getElementById("quizTitle");
+    const questionBox = document.getElementById("questionBox");
+    const submitQuizBtn = document.getElementById("submitQuizBtn");
+    const resultBox = document.getElementById("resultBox");
+
+    // 🧩 Step 1: Load topics from your lessons JSON
+    ageSelect.addEventListener("change", async () => {
+      selectedAge = ageSelect.value;
+      topicSelect.innerHTML = "<option value=''>--Select--</option>";
+
+      if (!selectedAge) return;
+
+      try {
+        const res = await fetch("./data/math_topics.json");
+        const data = await res.json();
+
+        const topics = data[selectedAge];
+        if (!topics) return;
+
+        topics.forEach(topic => {
+          const opt = document.createElement("option");
+          opt.value = topic.id;
+          opt.textContent = topic.title;
+          topicSelect.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Error loading topics:", err);
+      }
+    });
+
+    // 🧠 Step 2: Load quiz questions from quizzes.json
+    startQuizBtn.addEventListener("click", async () => {
+      selectedTopic = topicSelect.value;
+      if (!selectedAge || !selectedTopic) {
+        alert("Please select both age and topic!");
+        return;
+      }
+
+      const res = await fetch("./data/quizzes.json");
+      const data = await res.json();
+      currentQuiz = data[selectedAge]?.[selectedTopic] || [];
+
+      if (!currentQuiz.length) {
+        alert("No quiz found for this topic!");
+        return;
+      }
+
+      quizTitle.textContent = `Quiz: ${selectedTopic.toUpperCase()}`;
+      questionBox.innerHTML = currentQuiz
+        .map(
+          (q, i) => `
+        <div class="question-block">
+          <p><strong>Q${i + 1}.</strong> ${q.question}</p>
+          ${q.options
+            .map(
+              opt => `
+            <label>
+              <input type="radio" name="q${i}" value="${opt}" /> ${opt}
+            </label><br>`
+            )
+            .join("")}
+        </div>`
+        )
+        .join("");
+
+      document.getElementById("quizSetup").style.display = "none";
+      quizArea.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ ensure top is visible
+    });
+
+    // 🧾 Step 3: Submit quiz and save results
+    submitQuizBtn.addEventListener("click", async () => {
+      const answers = document.querySelectorAll("input[type=radio]:checked");
+      let score = 0;
+      let feedback = "";
+
+      currentQuiz.forEach((q, i) => {
+        const selected = [...answers].find(a => a.name === `q${i}`);
+        if (selected && selected.value === q.answer) {
+          score++;
+        } else {
+          feedback += `<p>❌ Q${i + 1}: ${q.hint}</p>`;
+        }
+      });
+
+      try {
+        const quizData = {
+          userId: user?.email || "guest",
+          ageGroup: selectedAge,
+          topicId: selectedTopic,
+          score,
+          total: currentQuiz.length,
+          timestamp: serverTimestamp()
+        };
+
+        console.log("📤 Saving quiz result:", quizData);
+        const docRef = await addDoc(collection(db, "quizResults"), quizData);
+        console.log("✅ Quiz result saved with ID:", docRef.id);
+      } catch (err) {
+        console.error("❌ Error saving quiz result:", err);
+      }
+
+      quizArea.style.display = "none";
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <h3>Your Score: ${score}/${currentQuiz.length}</h3>
+        <div>${feedback || "<p>🎉 Great work! You got all correct!</p>"}</div>
+        <button onclick="window.location.reload()">Take Another Quiz</button>
+      `;
+      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scroll back to results
+    });
+  </script>
+</body>
+</html>

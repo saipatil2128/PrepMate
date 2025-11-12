@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Science Module Coming Soon</title>
+  <style>
+    body {
+      background: linear-gradient(180deg, #d0f0fc, #f6ffe7);
+      font-family: "Comic Sans MS", cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .module-container {
+      background: white;
+      padding: 34px 28px;
+      border-radius: 22px;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.09);
+      max-width: 370px;
+      width: 92%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    h2 {
+      color: #51be84;
+      margin-bottom: 12px;
+    }
+    .soon-msg {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .try-math {
+      color: #0077b6;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      background: #0097e6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 32px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .back-btn:hover {
+      background: #005385;
+    }
+  </style>
+</head>
+<body>
+  <div class="module-container">
+    <h2>Science Module 🔬</h2>
+    <div class="soon-msg">This module will be coming soon!<br>You'll be notified.</div>
+    <div class="try-math">Try <strong>Maths</strong> instead!</div>
+    <button class="back-btn" id="backDashboard">Go to Dashboard</button>
+  </div>
+  <script>
+    document.getElementById("backDashboard").onclick = () => {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

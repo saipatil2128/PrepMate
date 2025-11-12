@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PrepMate Lesson</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "threeaddons": "https://unpkg.com/three@0.160.0/examples/jsm"
+      }
+    }
+  </script>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #dff6ff, #fff7df);
+      font-family: Comic Sans MS, cursive;
+    }
+    .lesson-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      width: 90%;
+      height: 90vh;
+      background: white;
+      border-radius: 25px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      padding: 20px;
+    }
+    #avatarContainer {
+      flex: 0 0 35%;
+      height: 100%;
+      background: #e3f6ff;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #avatarContainer canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+    #lessonArea {
+      flex: 0 0 65%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fffbe3;
+      border-radius: 20px;
+      padding: 20px;
+      height: 100%;
+    }
+    #lessonTitle {
+      font-size: 26px;
+      color: #333;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    /* Completely hidden for script */
+    #lessonText {
+      display: none !important;
+    }
+    #videoContainer {
+      width: 100%;
+      height: 420px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    #videoContainer iframe,
+    #videoContainer video {
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+    }
+    #startLessonBtn {
+      margin-top: 15px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 15px;
+      background: #6cb8ff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #startLessonBtn:hover {
+      background: #4c9ee6;
+    }
+    #goToDoubtBtn {
+      margin-top: 15px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 15px;
+      background: #4caf50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-block;
+    }
+    #goToDoubtBtn:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="lesson-wrapper">
+    <div id="avatarContainer"></div>
+    <div id="lessonArea">
+      <h2 id="lessonTitle">Loading Lesson...</h2>
+      <p id="lessonText">Please wait while we prepare your personalized lesson.</p>
+      <div id="videoContainer"></div>
+      <button id="startLessonBtn">Start Lesson</button>
+      <button id="goToDoubtBtn">Ask Your Doubts</button>
+    </div>
+  </div>
+  <script type="module" src="./scripts/lesson.js"></script>
+</body>
+</html>

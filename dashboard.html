@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    /* ... your original styles ... */
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", cursive;
+      background: linear-gradient(180deg, #e3f6ff, #fff7df);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px 20px 30px 20px;
+      border-radius: 25px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.13);
+      width: 90%;
+      max-width: 860px;
+      margin: 32px 0;
+    }
+    h1 {
+      color: #285179;
+      margin-bottom: 26px;
+      font-size: 2.25rem;
+    }
+    .main-layout {
+      margin-bottom: 20px;
+    }
+    .subjects {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      min-width: 300px;
+    }
+    .card {
+      background: #a8d8ff;
+      border-radius: 18px;
+      padding: 15px 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.09);
+      width: 155px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 7px;
+      cursor: pointer;
+      transition: all .17s cubic-bezier(.39,.58,.57,1);
+      text-align: center;
+      border: 2.5px solid transparent;
+    }
+    .card:hover {
+      background: #6cb8ff;
+      border: 2.5px solid #70a1ff;
+      transform: scale(1.07) translateY(-4px);
+      z-index: 2;
+    }
+    .card img {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 1.5px 1px #d8eaff);
+    }
+    .card h3 {
+      color: #254760;
+      margin: 0;
+      margin-top: 3px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 0.16px;
+    }
+    .bottom-row {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 19px;
+    }
+    .bottom-row button {
+      background: #81c9fa;
+      color: white;
+      border: none;
+      border-radius: 13px;
+      padding: 13px 29px;
+      font-size: 18px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      letter-spacing: 0.1px;
+      box-shadow: 0 1.15px 6px rgba(100,140,200,0.1);
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bottom-row button:hover {
+      background: #4ea2e3;
+    }
+    @media (max-width: 900px) {
+      .main-layout {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .subjects {
+        justify-content: center;
+        flex: auto;
+        min-width: 0;
+      }
+    }
+    @media (max-width: 540px) {
+      .container {
+        max-width: 99vw;
+        padding: 10px 2vw;
+      }
+      .card {
+        width: 88vw;
+        min-width: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Welcome to PrepMate Dashboard</h1>
+    <div class="main-layout">
+      <div class="subjects" id="subjectContainer"></div>
+    </div>
+    <div class="bottom-row">
+      <button onclick="window.location.href='quiz.html'">🧠 Quiz</button>
+      <button onclick="window.location.href='score.html'">📊 Score</button>
+      <button onclick="window.location.href='help.html'">💬 Help</button>
+      <button onclick="window.location.href='meetup.html'">🤝 Meetup</button>
+      <button onclick="window.location.href='parent.html'">👨‍👩‍👧 Parent Control</button>
+    </div>
+  </div>
+  <script type="module">
+    import { auth, db } from "./scripts/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    async function loadUserSubjects(user) {
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          const grade = userData.grade;
+          const age = userData.age;
+          localStorage.setItem("userGrade", grade);
+          localStorage.setItem("userAge", age);
+          const userDataLocal = { email: user.email, age, grade };
+          localStorage.setItem("loggedInUser", JSON.stringify(userDataLocal));
+          const lessonsResponse = await fetch(`./data/lessons_grade${grade}.json`);
+          const lessonsData = await lessonsResponse.json();
+          const container = document.getElementById("subjectContainer");
+          container.innerHTML = "";
+          Object.keys(lessonsData.subjects).forEach(sub => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+              <img src="./assets/${sub.toLowerCase()}.png" alt="${sub}">
+              <h3>${sub}</h3>`;
+            // === Updated logic ONLY here ===
+            card.onclick = () => {
+              localStorage.setItem("subject", sub);
+              if (sub.toLowerCase() === "english") {
+                window.location.href = "english.html";
+              } else if (sub.toLowerCase() === "science") {
+                window.location.href = "science.html";
+              } else if (sub.toLowerCase() === "math") {
+                window.location.href = "topic-selection.html";
+              } else {
+                window.location.href = "lesson.html";
+              }
+            };
+            container.appendChild(card);
+          });
+        } else {
+          console.warn("User data not found in Firestore, loading default subjects...");
+          loadDefaultSubjects();
+        }
+      } catch (error) {
+        console.error("Error fetching user grade:", error);
+        loadDefaultSubjects();
+      }
+    }
+
+    function loadDefaultSubjects() {
+      fetch("./data/subjects.json")
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("subjectContainer");
+          container.innerHTML = "";
+          data.subjects.forEach(sub => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+              <img src="${sub.icon}" alt="${sub.name}">
+              <h3>${sub.name}</h3>`;
+            // === Updated logic ONLY here ===
+            card.onclick = () => {
+              localStorage.setItem("subject", sub.name);
+              if (sub.name.toLowerCase() === "english") {
+                window.location.href = "english.html";
+              } else if (sub.name.toLowerCase() === "science") {
+                window.location.href = "science.html";
+              } else if (sub.name.toLowerCase() === "math") {
+                window.location.href = "topic-selection.html";
+              } else {
+                window.location.href = "lesson.html";
+              }
+            };
+            container.appendChild(card);
+          });
+        })
+        .catch(error => {
+          console.error("Error loading subjects:", error);
+          const container = document.getElementById("subjectContainer");
+          container.innerHTML = "<p>Error loading subjects. Please refresh the page.</p>";
+        });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      loadUserSubjects(user);
+    });
+  </script>
+</body>
+</html>

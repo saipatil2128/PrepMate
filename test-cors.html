@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test</h1>
+    <button onclick="testServer()">Test Server</button>
+    <button onclick="testCORS()">Test CORS</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testServer() {
+            const result = document.getElementById('result');
+            try {
+                const res = await fetch('http://localhost:3000/test');
+                const data = await res.json();
+                result.textContent = '✅ Server Test: ' + JSON.stringify(data, null, 2);
+            } catch (err) {
+                result.textContent = '❌ Server Test Error: ' + err.message;
+            }
+        }
+
+        async function testCORS() {
+            const result = document.getElementById('result');
+            try {
+                const res = await fetch('http://localhost:3000/ask-gemini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: 'Test question'
+                    })
+                });
+                const data = await res.json();
+                result.textContent = '✅ CORS Test: ' + JSON.stringify(data, null, 2);
+            } catch (err) {
+                result.textContent = '❌ CORS Test Error: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
+

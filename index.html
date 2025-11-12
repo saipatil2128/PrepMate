@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to PrepMate</h1>
+
+    <!-- NEW: Name Input -->
+    <input type="text" id="name" placeholder="Enter Child's Name" required />
+
+    <input type="email" id="email" placeholder="Enter Email" required />
+    <input type="password" id="password" placeholder="Enter Password" required />
+    <input type="number" id="age" placeholder="Enter Child's Age (5–9)" min="5" max="9" required />
+
+    <button id="signup">Sign Up</button>
+    <button id="login">Log In</button>
+    <p id="msg"></p>
+  </div>
+
+
+  <script type="module">
+    let auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword;
+    let setDoc, doc;
+
+    try {
+      const firebaseModule = await import("./scripts/firebase.js");
+      auth = firebaseModule.auth;
+      db = firebaseModule.db;
+      createUserWithEmailAndPassword = firebaseModule.createUserWithEmailAndPassword;
+      signInWithEmailAndPassword = firebaseModule.signInWithEmailAndPassword;
+
+      // Import Firestore functions
+      ({ setDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"));
+
+    } catch (error) {
+      console.error("Firebase import error:", error);
+      const msg = document.getElementById("msg");
+      msg.textContent = "Error loading Firebase. Please check the browser console for details.";
+      msg.style.color = "red";
+      document.getElementById("signup").disabled = true;
+      document.getElementById("login").disabled = true;
+    }
+
+    const nameInput = document.getElementById("name"); // ✅
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const ageInput = document.getElementById("age");
+    const msg = document.getElementById("msg");
+    const signupBtn = document.getElementById("signup");
+    const loginBtn = document.getElementById("login");
+
+    function showMessage(text, isError = false) {
+      msg.textContent = text;
+      msg.style.color = isError ? "red" : "green";
+    }
+
+    function redirectToDashboard(userData = null) {
+      if (userData) {
+        localStorage.setItem("loggedInUser", JSON.stringify(userData));
+      }
+      showMessage("Redirecting to dashboard...");
+      window.location.href = "dashboard.html";
+    }
+
+    signupBtn.addEventListener("click", async () => {
+      if (!auth || !createUserWithEmailAndPassword) {
+        showMessage("Firebase not initialized. Please refresh the page.", true);
+        return;
+      }
+
+      if (!nameInput.value || !email.value || !password.value || !ageInput.value) {
+        showMessage("Please fill in all fields", true);
+        return;
+      }
+
+      if (password.value.length < 6) {
+        showMessage("Password must be at least 6 characters", true);
+        return;
+      }
+
+      try {
+        signupBtn.disabled = true;
+        signupBtn.textContent = "Signing up...";
+        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+        const user = userCredential.user;
+
+        const name = nameInput.value.trim();
+        const age = parseInt(ageInput.value);
+        const grade = age <= 6 ? 1 : age <= 8 ? 2 : 3;
+
+        // Save user info including name to Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          name: name,
+          age: age,
+          grade: grade
+        });
+
+        const userData = { email: user.email, name, age, grade };
+        localStorage.setItem("loggedInUser", JSON.stringify(userData));
+        showMessage("Signup successful! Redirecting...");
+        setTimeout(() => redirectToDashboard(userData), 1000);
+
+      } catch (error) {
+        let errorMsg = error.message || "Signup failed. Please try again.";
+        if (error.code === "auth/configuration-not-found") {
+          errorMsg = "Firebase Authentication is not enabled. Please enable it in Firebase Console > Authentication > Get Started.";
+        }
+        showMessage(errorMsg, true);
+        signupBtn.disabled = false;
+        signupBtn.textContent = "Sign Up";
+      }
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      if (!auth || !signInWithEmailAndPassword) {
+        showMessage("Firebase not initialized. Please refresh the page.", true);
+        return;
+      }
+
+      if (!email.value || !password.value) {
+        showMessage("Please enter both email and password", true);
+        return;
+      }
+
+      try {
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
+
+        const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+        const user = userCredential.user;
+
+        // Fetch the user info (including name, age, grade) from Firestore
+        const firestore = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+        const userDoc = await firestore.getDoc(firestore.doc(db, "users", user.uid));
+
+        let userData;
+        if (userDoc.exists()) {
+          userData = userDoc.data();
+          localStorage.setItem("loggedInUser", JSON.stringify(userData));
+        }
+
+        showMessage("Login successful! Redirecting...");
+        setTimeout(() => redirectToDashboard(userData), 1000);
+
+      } catch (error) {
+        let errorMsg = error.message || "Login failed. Please check your credentials.";
+        if (error.code === "auth/configuration-not-found") {
+          errorMsg = "Firebase Authentication is not enabled. Please enable it in Firebase Console > Authentication > Get Started.";
+        }
+        showMessage(errorMsg, true);
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Log In";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "5-6": [
+    {
+      "id": "counting",
+      "title": "Counting 1–10",
+      "description": "Learn to count numbers using fruits and toys.",
+      "prompt": "Let’s count together! One apple, two bananas, one orange ,two strawberries, two cherries, one pineapple, two pears, one watermelon!! keep your eyes on the numbers! Great job counting! Counting helps us know how many things we have.",
+      "video": "./assets/videos/counting.mp4"
+    },
+    {
+      "id": "shapes",
+      "title": "Shapes and Colors",
+      "description": "Discover circles, squares, and colors around you!",
+      "prompt": "Let’s learn shapes! This one is a circle — it’s round! A square has four equal sides, and triangles have three! Then comes the rectangle it has length and breadth then you see a star! Shapes are everywhere — your clock is a circle, your book is a rectangle. Try finding shapes at home!",
+      "video": "./assets/videos/shapes.mp4"
+    },
+    {
+      "id": "sizes",
+      "title": "Big and Small",
+      "description": "Understand size differences using cute animals and objects.",
+      "prompt": "Let’s look at sizes! Some things are big, and some are small. Can you spot which one is bigger? Nice! Big means large, small means tiny. Look around — what big and small things can you find near you?",
+      "video": "./assets/videos/big&small.mp4"
+    }
+  ],
+  "7-8": [
+    {
+      "id": "addition",
+      "title": "Simple Addition",
+      "description": "Add numbers using fruits and pictures.",
+      "script": "Let’s learn addition! When we put two groups together, the number becomes bigger. Watch closely! See? That’s how 2 plus 3 made 5. Addition means joining things — easy and fun, right?",
+      "video": "./assets/videos/addition.mp4"
+    },
+    {
+      "id": "subtraction",
+      "title": "Subtraction Basics",
+      "description": "Learn subtraction by taking things away.",
+      "prompt": "Now let’s learn subtraction! When we take away some objects, the total gets smaller. You saw that? Five take away two leaves three. Subtraction means removing or taking away something!",
+      "video": "./assets/videos/subtraction.mp4"
+    },
+    {
+      "id": "multiplication",
+      "title": "Introduction to Multiplication",
+      "description": "Understand multiplication as repeated addition.",
+      "prompt": "Here is a quick video that explains multiplication as repeated addition! Click on the start button and unravel the mysteries of math!! Enjoy learning!",
+      "video": "https://www.youtube.com/embed/SRiYDszxruc?start=62"
+    }
+  ],
+  "9": [
+    {
+      "id": "multiplication",
+      "title": "Introduction to Multiplication",
+      "description": "Understand multiplication as repeated addition.",
+      "prompt": "Here is a quick video that explains multiplication as repeated addition! Click on the start button and unravel the mysteries of math!! Enjoy learning!",
+      "video": "https://www.youtube.com/embed/SRiYDszxruc?start=62"
+    },
+    {
+      "id": "fractions",
+      "title": "Understanding Fractions",
+      "description": "Learn halves and quarters using pizza or cake!",
+      "prompt": "Lesgoooo pizza time!  Let’s see how one big pizza can be split into smaller, equal pieces. Each slice is a fraction — a part of the whole pizza! Watch closely — can you count how many slices we get?",
+      "video": "https://www.youtube.com/embed/n0FZhQ_GkKw"
+    },
+    {
+      "id": "wordproblems",
+      "title": "Math Word Problems",
+      "description": "Solve fun story-based math problems.",
+      "prompt": "Okay, math detectives!  Let’s solve some word problems together! Sometimes we need to add when things come together, and sometimes we subtract when things go away! Listen carefully to each story — and see if you can tell which one it is!",
+      "video": "https://www.youtube.com/embed/C229LUk380Q"
+    }
+  ]
+}

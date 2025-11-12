@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepMate Doubt Solver</title>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #e3f2fd, #fffde7);
+      font-family: "Comic Sans MS", cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #avatarCircle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #cfefff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    #chatBox {
+      width: 70%;
+      height: 50vh;
+      background: #fff;
+      border-radius: 20px;
+      padding: 15px;
+      overflow-y: auto;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .userMsg {
+      background: #6cb8ff;
+      color: white;
+      border-radius: 15px;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: right;
+      max-width: 70%;
+      margin-left: auto;
+    }
+
+    .aiMsg {
+      background: #f3f3f3;
+      color: #333;
+      border-radius: 15px;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: left;
+      max-width: 70%;
+      margin-right: auto;
+    }
+
+    #inputArea {
+      width: 70%;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    #questionInput {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+    }
+
+    #sendBtn, #micBtn {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background: #6cb8ff;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #sendBtn:hover, #micBtn:hover {
+      background: #4c9ee6;
+    }
+    #backDashboardBtn {
+      margin-top: 18px;
+      background: #6cb8ff;
+      color: #134174;
+      border: none;
+      border-radius: 20px;
+      padding: 12px 35px;
+      font-size: 17px;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+      box-shadow: 0 1px 6px rgba(120,183,255,0.06);
+    }
+    #backDashboardBtn:hover {
+      background: #4ea2e3;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="chatBox">
+    <div class="aiMsg">👋 Hi there! I’m Timmy. Ask me any question — I’ll help you understand it easily!</div>
+  </div>
+
+  <div id="inputArea">
+    <input id="questionInput" placeholder="Ask your question here..." />
+    <button id="micBtn">Speak🎤</button>
+    <button id="sendBtn">Send ▶️</button>
+  </div>
+  <button id="backDashboardBtn" onclick="window.location.href='dashboard.html'">⬅ Back to Dashboard</button>
+  <script type="module" src="./scripts/doubts.js"></script>
+</body>
+</html>

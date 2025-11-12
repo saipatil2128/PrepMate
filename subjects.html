@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Topics | PrepMate</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive;
+      background: linear-gradient(180deg, #dff6ff, #fff7df);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h2 {
+      color: #2a7cc7;
+      margin-bottom: 20px;
+    }
+    .topic-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 80%;
+      max-width: 500px;
+    }
+    .topic-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .topic-btn:hover {
+      background: #3e8e41;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧮 Choose a Math Topic</h2>
+  <div id="topicContainer" class="topic-container">Loading topics...</div>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from "./scripts/firebase.js";
+
+    // Function to load topics based on age
+    async function loadTopicsForAge(age) {
+      const res = await fetch("./data/math_topics.json");
+      const data = await res.json();
+
+      const topics = data[age] || [];
+      const container = document.getElementById("topicContainer");
+
+      if (topics.length === 0) {
+        container.innerHTML = `<p>No topics available for age ${age}</p>`;
+        return;
+      }
+
+      container.innerHTML = topics.map(t => `
+        <button class="topic-btn" onclick="startLesson('${t.id}', '${t.title}', '${t.prompt}')">
+          ${t.title}
+        </button>
+      `).join("");
+    }
+
+    // Function to store selected topic & redirect
+    window.startLesson = function(id, title, prompt) {
+      localStorage.setItem("selectedTopic", JSON.stringify({ id, title, prompt }));
+      window.location.href = "lesson.html";
+    };
+
+    // Get user age from Firestore or localStorage
+    onAuthStateChanged(getAuth(), (user) => {
+      if (user) {
+        const age = parseInt(localStorage.getItem("userAge"));
+        loadTopicsForAge(age);
+      } else {
+        console.warn("User not logged in. Using test age 6.");
+        loadTopicsForAge(6);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Kids Meetup</title>
+  <style>
+    body {
+      background: linear-gradient(180deg, #e0f7fa, #fff7df);
+      font-family: "Comic Sans MS", cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .meetup-join-container {
+      background: white;
+      padding: 36px 28px;
+      border-radius: 20px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+      max-width: 350px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .meetup-join-container h2 {
+      margin-bottom: 12px;
+      text-align: center;
+      color: #2d3436;
+    }
+    .meetup-join-container label {
+      font-size: 16px;
+      margin-top: 15px;
+      margin-bottom: 4px;
+      color: #0077b6;
+      width: 100%;
+      text-align: left;
+    }
+    .meetup-join-container input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #b0bec5;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+    }
+    .meetup-join-container button {
+      background: #74b9ff;
+      color: white;
+      border: none;
+      font-size: 17px;
+      padding: 12px 28px;
+      border-radius: 13px;
+      margin-top: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .meetup-join-container button:hover {
+      background: #0984e3;
+    }
+    #joinMsg {
+      margin-top: 10px;
+      color: #00b894;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="meetup-join-container">
+    <h2>Join Kids Meetup</h2>
+    <label for="kidName">Your Name:</label>
+    <input type="text" id="kidName" placeholder="Enter your name or nickname" required />
+
+    <label for="kidAge">Your Age:</label>
+    <input type="number" id="kidAge" min="5" max="12" placeholder="Enter your age" required />
+
+    <button id="joinBtn">Join Meetup</button>
+    <div id="joinMsg"></div>
+  </div>
+  <script>
+    const joinBtn = document.getElementById('joinBtn');
+    const nameInput = document.getElementById('kidName');
+    const ageInput = document.getElementById('kidAge');
+    const msg = document.getElementById('joinMsg');
+    
+    joinBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const age = parseInt(ageInput.value);
+      if (!name || !age || age < 5 || age > 12) {
+        msg.textContent = "Please enter a valid name and age (5-12).";
+        msg.style.color = "#e17055";
+        return;
+      }
+      msg.style.color = "#00b894";
+      msg.textContent = `Welcome, ${name}! You'll joining the meetup as age ${age}. 😊`;
+
+      // Optionally save to localStorage or make an API call here
+      // localStorage.setItem("meetupParticipant", JSON.stringify({ name, age }));
+      // window.location.href = "meetup-confirm.html";
+    });
+  </script>
+</body>
+</html>
