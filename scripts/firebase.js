@@ -9,12 +9,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase
 
 // 🔥 Replace the below config with your actual Firebase project settings
 const firebaseConfig = {
-  apiKey: "AIzaSyAH3YxAqNFgOJQ9uXZM694ilQtwnZe5V4s",
-  authDomain: "sai2128.firebaseapp.com",
-  projectId: "sai2128",
-  storageBucket: "sai2128.appspot.com",
-  messagingSenderId: "255118295773",
-  appId: "1:255118295773:web:fdf9522edf1c73cb089134"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
 };
 
 // Initialize Firebase
