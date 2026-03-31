@@ -9,7 +9,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase
 
 // 🔥 Replace the below config with your actual Firebase project settings
 const firebaseConfig = {
-  apiKey: "AIzaSyBeyp87gBo-OZljZYo3hd8516Woi94_B8g",
+  apiKey: "AIzaSyAH3YxAqNFgOJQ9uXZM694ilQtwnZe5V4s",
   authDomain: "sai2128.firebaseapp.com",
   projectId: "sai2128",
   storageBucket: "sai2128.appspot.com",
